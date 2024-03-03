@@ -1,30 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Пошук зображень</title>
-  
-  <script type="module" crossorigin src="/goit-js-hw-11/commonHelpers.js"></script>
-  <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-9310f15c.js">
-  <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-fd638ea2.css">
-  <link rel="stylesheet" href="/goit-js-hw-11/assets/index-a01724e0.css">
-</head>
-
-<body>
-  <form class="form-inline search-form">
-    <div class="form-group">
-      <input type="text" class="form-control" name="query" placeholder="Search images..." />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Search</button>
-  </form>
-
-  <span class="loader"></span>
-  <ul class="gallery"></ul>
-
-  
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Homework 11</title>
+    
+    <script type="module" crossorigin src="/goit-js-hw-11/commonHelpers.js"></script>
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-46aac873.js">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-eb6030bc.css">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/index-8625a4d2.css">
+  </head>
+  <body>
+    <section>
+      <form class="input-search-form">
+        <input
+          name="search"
+          type="text"
+          id="select-image"
+          placeholder="Search images..."
+        />
+        <button type="submit" data-fetch>Search</button>
+      </form>
+      <div class="container">
+        <span class="loader is-hidden"></span>
+        <ul class="gallery"></ul>
+      </div>
+    </section>
+    
+  </body>
 </html>
