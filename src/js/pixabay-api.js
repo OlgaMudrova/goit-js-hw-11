@@ -1,12 +1,21 @@
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '42139525-c14302dd397ed074e72a8f596';
+// Запит до Pixabay API
+export function getPictures(query) {
+  const API_KEY = '42417927-02b658e2f5610bf7e034ab0b0';
+  const BASE_URL = 'https://pixabay.com/api/';
 
-searchForm.addEventListener('submit', event => {
-  event.preventDefault();
-  cardContainer.innerHTML = '';
+  const searchParams = new URLSearchParams({
+    key: API_KEY,
+    q: query,
+    image_type: 'photo',
+    orientation: 'horizontal',
+    safesearch: true,
+    per_page: 200,
+  });
 
-  const query = event.currentTarget.elements.query.value.trim();
-  if (!query) {
-    handleNoImages();
-    return;
-  }
+  return fetch(`${BASE_URL}?${searchParams}`).then(response => {
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    return response.json();
+  });
+}

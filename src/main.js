@@ -1,88 +1,76 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+// Додавання бібліотеки iziToast
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+// Додавання бібліотеки SimpleLightbox
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+import { markupGallery } from './js/render-functions.js';
+import { getPictures } from './js/pixabay-api.js';
+
+const list = document.querySelector('.gallery');
+const fetcImageForm = document.querySelector('form');
 const loader = document.querySelector('.loader');
 
-let gallery = new SimpleLightbox('.gallery-item a', {
-  captionDelay: 250,
+//Ініціалізація бібліотеки SimpleLightbox та налаштування опций модального вікна
+const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
 });
 
-const cardContainer = document.querySelector('.gallery');
-const searchForm = document.querySelector('.search-form');
+fetcImageForm.addEventListener('submit', fetchImage);
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '42139525-c14302dd397ed074e72a8f596';
-
-searchForm.addEventListener('submit', event => {
+function fetchImage(event) {
   event.preventDefault();
-  cardContainer.innerHTML = '';
+  list.innerHTML = '';
 
-  const query = event.currentTarget.elements.query.value.trim();
-  if (!query) {
-    handleNoImages();
-    return;
-  }
+  loader.classList.remove('is-hidden');
 
-  loader.style.display = 'block';
+  const searchQuery = event.target.elements.search.value.trim();
 
-  const url = `${BASE_URL}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true`;
-  fetchImages(url)
-    .then(data => {
-      loader.style.display = 'none';
-      if (data.hits.length === 0) {
-        handleNoImages();
-      } else {
-        cardContainer.innerHTML = generateGallery(data.hits);
-        gallery.refresh();
+  getPictures(searchQuery)
+    .then(response => {
+      if (!response.hits.length) {
+        //  Повідомлення про відсутність зображення відповідно запиту / Ініціаналізація бібліотеки iziToast
+        iziToast.error({
+          message: `Sorry, there are no images matching your search query. Please try again!`,
+          transitionIn: 'bounceInDown',
+          theme: 'dark',
+          messageColor: '#ffffff',
+          messageSize: 16,
+          messageLineHeight: 24,
+          color: '#ef4040',
+          progressBar: false,
+          position: 'topRight',
+          maxWidth: 432,
+        });
       }
+      // Відображення галереї зображень відповідно запиту
+      const markup = markupGallery(response.hits);
+
+      list.insertAdjacentHTML('beforeend', markup);
+      lightbox.refresh();
+
+      event.target.reset();
     })
-    .catch(error => console.error(error));
-});
+    .catch(error => {
+      //   Повідомлення про тип помилки
+      iziToast.error({
+        message: `${error}`,
+        transitionIn: 'bounceInDown',
+        theme: 'dark',
+        messageColor: '#ffffff',
+        messageSize: 16,
+        messageLineHeight: 24,
+        color: '#ef4040',
+        progressBar: false,
+        position: 'topRight',
+        maxWidth: 432,
+      });
+    })
 
-function fetchImages(url) {
-  return fetch(url).then(resp => {
-    if (!resp.ok) {
-      throw new Error(resp.statusText);
-    }
-    return resp.json();
-  });
-}
-
-function generateGallery(hits) {
-  return hits
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) =>
-        `<li class="gallery-item">
-            <a href=${largeImageURL}> 
-                <img class="gallery-image" src=${webformatURL} alt=${tags} />
-            </a>
-            <div class="gallery-text">
-                <p class="text-block">Likes: <span class="text-value">${likes}</span></p>
-                <p class="text-block">Views: <span class="text-value">${views}</span></p>
-                <p class="text-block">Comments: <span class="text-value">${comments}</span></p>
-                <p class="text-block">Downloads: <span class="text-value">${downloads}</span></p>
-            </div>
-      </li>`
-    )
-    .join('');
-}
-
-function handleNoImages() {
-  iziToast.error({
-    maxWidth: 432,
-    position: 'topRight',
-    color: 'red',
-    message:
-      'Sorry, there are no images matching your search query. Please try again!',
-  });
+    .finally(() => {
+      loader.classList.add('is-hidden');
+    });
 }
